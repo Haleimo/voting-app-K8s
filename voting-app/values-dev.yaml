@@ -1,0 +1,10 @@
+# Local / minikube overrides
+vote:
+  service:
+    type: NodePort
+result:
+  service:
+    type: NodePort
+db:
+  persistence:
+    enabled: false

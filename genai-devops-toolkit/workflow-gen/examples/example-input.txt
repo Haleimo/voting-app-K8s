@@ -1,0 +1,2 @@
+build and push the vote and result images on push to main, deploy to staging
+via Helm using values-dev.yaml, and run a smoke test against the vote service

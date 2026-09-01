@@ -1,0 +1,7 @@
+# Helm package output
+*.tgz
+
+# OS/IDE metadata
+.DS_Store
+.idea/
+.vscode/

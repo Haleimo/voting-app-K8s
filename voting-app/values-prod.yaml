@@ -1,0 +1,17 @@
+# Cloud (EKS/AKS/GKE) overrides
+vote:
+  replicaCount: 3
+  service:
+    type: LoadBalancer
+result:
+  replicaCount: 3
+  service:
+    type: LoadBalancer
+worker:
+  replicaCount: 2
+db:
+  persistence:
+    enabled: true
+    size: 10Gi
+ingress:
+  enabled: true

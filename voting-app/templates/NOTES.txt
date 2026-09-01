@@ -1,0 +1,13 @@
+Voting app deployed as release "{{ .Release.Name }}" in namespace "{{ .Release.Namespace }}".
+
+Vote service type:   {{ .Values.vote.service.type }}
+Result service type: {{ .Values.result.service.type }}
+
+To find the vote app URL:
+{{- if eq .Values.vote.service.type "LoadBalancer" }}
+  kubectl get svc {{ .Release.Name }}-vote -n {{ .Release.Namespace }} -w
+{{- else if eq .Values.vote.service.type "NodePort" }}
+  export NODE_PORT=$(kubectl get svc {{ .Release.Name }}-vote -n {{ .Release.Namespace }} -o jsonpath='{.spec.ports[0].nodePort}')
+  export NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[0].address}')
+  echo http://$NODE_IP:$NODE_PORT
+{{- end }}

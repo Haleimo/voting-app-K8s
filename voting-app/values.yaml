@@ -1,0 +1,93 @@
+# Default values for voting-app.
+
+vote:
+  image:
+    repository: yourdockerhubuser/voting-app-vote
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: NodePort
+    port: 80
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+
+worker:
+  image:
+    repository: yourdockerhubuser/voting-app-worker
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+
+result:
+  image:
+    repository: yourdockerhubuser/voting-app-result
+    tag: latest
+    pullPolicy: IfNotPresent
+  replicaCount: 1
+  service:
+    type: NodePort
+    port: 80
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+
+redis:
+  image:
+    repository: redis
+    tag: "alpine"
+  service:
+    port: 6379
+  resources:
+    requests:
+      cpu: 10m
+      memory: 16Mi
+    limits:
+      cpu: 50m
+      memory: 32Mi
+
+db:
+  image:
+    repository: postgres
+    tag: "15-alpine"
+  service:
+    port: 5432
+  # Do not commit real credentials. Override via --set or a sealed secret in prod.
+  auth:
+    user: postgres
+    password: postgres
+    database: votes
+  persistence:
+    enabled: true
+    size: 1Gi
+  resources:
+    requests:
+      cpu: 25m
+      memory: 64Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+ingress:
+  enabled: false
+  className: nginx
+  hosts:
+    vote: vote.example.com
+    result: result.example.com
+  tls: []

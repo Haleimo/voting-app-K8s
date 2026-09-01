@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lightweight Voting App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --card-hover: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-pink: #ec4899;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --border-color: #334155;
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(236, 72, 153, 0.15) 0px, transparent 50%);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 520px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 32px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(12px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 14px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 9999px;
+            margin-bottom: 12px;
+        }
+
+        .title {
+            font-size: 1.85rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 28px;
+        }
+
+        .option-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+        }
+
+        .option-card:hover {
+            transform: translateY(-4px);
+            border-color: #64748b;
+            background: var(--card-hover);
+        }
+
+        .option-card.selected {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+            background: rgba(59, 130, 246, 0.15);
+        }
+
+        .option-card.selected[data-id="cats"] {
+            border-color: var(--accent-pink);
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+            background: rgba(236, 72, 153, 0.15);
+        }
+
+        .option-icon {
+            font-size: 3.5rem;
+            margin-bottom: 10px;
+            display: block;
+            transition: transform 0.2s;
+        }
+
+        .option-card:hover .option-icon {
+            transform: scale(1.15);
+        }
+
+        .option-label {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .results-section {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .results-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .total-badge {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        .result-bar-item {
+            margin-bottom: 14px;
+        }
+
+        .result-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .progress-track {
+            height: 10px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 9999px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .footer-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .btn-reset {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: color 0.2s;
+            text-decoration: underline;
+        }
+
+        .btn-reset:hover {
+            color: #ef4444;
+        }
+
+        .status-msg {
+            text-align: center;
+            font-size: 0.85rem;
+            min-height: 20px;
+            color: var(--accent-green);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="badge">LIGHTWEIGHT DEMO</span>
+            <h1 class="title">Cast Your Vote</h1>
+            <p class="subtitle">Select your favorite option below</p>
+        </div>
+
+        <div class="options-grid">
+            {% for opt in options %}
+            <div class="option-card" data-id="{{ opt.id }}" onclick="castVote('{{ opt.id }}')">
+                <span class="option-icon">{{ opt.icon }}</span>
+                <span class="option-label">{{ opt.label }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="status-msg" id="statusMsg"></div>
+
+        <div class="results-section">
+            <div class="results-header">
+                <span class="results-title">Live Results</span>
+                <span class="total-badge" id="totalVotes">0 votes</span>
+            </div>
+
+            <div id="resultsContainer">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+
+        <div class="footer-actions">
+            <button class="btn-reset" onclick="resetVotes()">Reset Votes</button>
+            <span style="font-size: 0.75rem; color: #64748b;">Fast • Reliable • Lightweight</span>
+        </div>
+    </div>
+
+    <script>
+        let currentVoted = null;
+
+        async function fetchResults() {
+            try {
+                const res = await fetch('/api/results');
+                const data = await res.json();
+                
+                document.getElementById('totalVotes').innerText = `${data.total} total vote${data.total === 1 ? '' : 's'}`;
+                
+                const container = document.getElementById('resultsContainer');
+                container.innerHTML = '';
+
+                data.results.forEach(item => {
+                    const el = document.createElement('div');
+                    el.className = 'result-bar-item';
+                    el.innerHTML = `
+                        <div class="result-info">
+                            <span>${item.icon} ${item.label} (${item.count})</span>
+                            <span>${item.percentage}%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" style="width: ${item.percentage}%; background-color: ${item.color};"></div>
+                        </div>
+                    `;
+                    container.appendChild(el);
+                });
+            } catch (err) {
+                console.error("Failed to fetch results", err);
+            }
+        }
+
+        async function castVote(optionId) {
+            try {
+                const cards = document.querySelectorAll('.option-card');
+                cards.forEach(c => c.classList.remove('selected'));
+
+                const selectedCard = document.querySelector(`.option-card[data-id="${optionId}"]`);
+                if (selectedCard) selectedCard.classList.add('selected');
+
+                const res = await fetch('/api/vote', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ vote: optionId })
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    currentVoted = optionId;
+                    document.getElementById('statusMsg').innerText = `✓ Voted for ${optionId.toUpperCase()}!`;
+                    fetchResults();
+                } else {
+                    document.getElementById('statusMsg').innerText = `Error: ${data.error}`;
+                }
+            } catch (err) {
+                console.error("Failed to vote", err);
+            }
+        }
+
+        async function resetVotes() {
+            if (!confirm("Are you sure you want to reset all votes?")) return;
+            try {
+                await fetch('/api/reset', { method: 'POST' });
+                document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+                document.getElementById('statusMsg').innerText = 'Votes reset.';
+                fetchResults();
+            } catch (err) {
+                console.error("Failed to reset", err);
+            }
+        }
+
+        // Initial fetch and periodic polling
+        fetchResults();
+        setInterval(fetchResults, 3000);
+    </script>
+</body>
+</html>

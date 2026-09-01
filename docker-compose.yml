@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  voting-app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - DB_PATH=/app/votes.db
+    restart: unless-stopped
